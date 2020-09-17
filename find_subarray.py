@@ -24,15 +24,14 @@ class Sequence:
 
 class MaxSequence:
     def __init__(self):
-        # self.curr = Sequence()
+        self.cur_max = Sequence()
         self.positive = Sequence()
-        # self.second_positive_sequence = Sequence()
         self.negative = Sequence()
         self.max = Sequence()
         self.list =[]
 
     def reset_indices(self):
-        for seq in [self.positive, self.negative]:#, self.curr]:
+        for seq in [self.positive, self.negative]:
             seq.reset_indices()
 
     def set_first_index(self, index):
@@ -40,34 +39,37 @@ class MaxSequence:
         self.max.reset_indices()
         self.positive.first_index = index
         self.max.first_index = index
-        # self.curr.first_index = index
+        self.cur_max.first_index = index
 
     def set_sum(self):
         if self.max.sum == 0:
             self.max = self.positive.copy()
+            self.cur_max = self.positive.copy()
         else:
             # increase max
-            print(f"set sum max {self.max}, pos {self.positive},neg {self.negative}")
             if self.max.last_index == self.negative.first_index - 1:
-                print(f"combine {self.max}, {self.positive}, {self.negative}")
-                combined_sum = self.negative.sum + self.positive.sum
-                if combined_sum >= 0:
-                    self.max.sum += combined_sum
-                    self.max.last_index = self.positive.last_index
+                if self.positive.sum + self.negative.sum > 0:
+                    if self.max.sum + self.negative.sum > 0:
+                        self.max.sum = self.negative.sum + self.positive.sum + self.max.sum
+                        self.max.last_index = self.positive.last_index
+                    else:
+                        self.max = self.positive.copy()
                 else:
-                    if len(self.list) == 0:
-                        self.list.append(self.max.copy())
-                    self.list.append(self.negative.copy())
-                    self.list.append(self.positive.copy())
-
+                    self.cur_max = self.positive.copy()
+                    if self.max.sum + self.negative.sum > 0:
+                        self.cur_max.first_index = self.max.first_index
+                        self.cur_max.sum = self.max.sum + self.positive.sum + self.negative.sum
             else:
-                if len (self.list) == 0:
-                    self.list.append(self.max.copy())
-                self.list.append(self.negative.copy())
-                self.list.append(self.positive.copy())
+                if self.cur_max.sum + self.negative.sum > 0:
+                    self.cur_max.sum = self.cur_max.sum + self.positive.sum + self.negative.sum
+                    self.cur_max.last_index = self.positive.last_index
+                else:
+                    self.cur_max = self.positive.copy()
+                if self.cur_max.sum > self.max.sum:
+                    self.max = self.cur_max.copy()
 
-            if self.positive.sum > self.max.sum:
-                self.max = self.positive.copy()
+                if self.positive.sum > self.max.sum:
+                    self.max = self.positive.copy()
         self.reset_indices()
 
 
@@ -100,50 +102,30 @@ def findMaxSubArray(A):
         seq.sum += elem
         seq.last_index = index
 
-
     if is_curr_positive:
         sequence.set_sum()
-
-    if sequence.list:
-        max_elem = sequence.list[0].copy()
-        # cur_sum = max_sum.sum
-        cur_elem = None
-
-        for elem in sequence.list:
-            if cur_elem:
-                cur_elem.sum += elem.sum
-                cur_elem.last_index = elem.last_index
-                if cur_elem.sum > max_elem.sum:
-                    max_elem = cur_elem.copy()
-
-                if cur_elem.sum < 0:
-                    cur_elem = None
-
-            elif elem.sum > 0:
-                cur_elem = elem.copy()
-                if cur_elem.sum > max_elem.sum:
-                    max_elem = cur_elem.copy()
-        return max_elem.sum#, sequence
-    else:
-        return sequence.max.sum#, sequence
+    return sequence.max.sum
 
 
 class TestFindMaxSubArray(unittest.TestCase):
     def test_find_max_sub_array(self):
+        self.assertEqual(findMaxSubArray([1]),1)
+        self.assertEqual(findMaxSubArray([-1]),-1)
+        self.assertEqual(findMaxSubArray([-5,-1,-2]),-1)
+        self.assertEqual(findMaxSubArray([0,0,0]),0)
         self.assertEqual(findMaxSubArray([1,2,3]),6)
+        self.assertEqual(findMaxSubArray([4,-5,6]),6)
+        self.assertEqual(findMaxSubArray([9,-8,7,-1,5]),12)
         self.assertEqual(findMaxSubArray([0,1,2,0,3,0]),6)
         self.assertEqual(findMaxSubArray([-1,-2,0,1,2,0,3,0]),6)
         self.assertEqual(findMaxSubArray([-1,-2,0,1,2,0,3,0, -1,-2,5,2]),10)
         self.assertEqual(findMaxSubArray([5,-4,3,-2,5,-1,0.5]),7)
         self.assertEqual(findMaxSubArray([2, -1, 3,-2,1,-1,5]),7)
         self.assertEqual(findMaxSubArray([1,-1,2,1,5,-3,2,-8,6,-1,3]), 8)
-        self.assertEqual(findMaxSubArray([1]),1)
-        self.assertEqual(findMaxSubArray([0,0,0]),0)
         self.assertEqual(findMaxSubArray([4,-1,1,-2,3,-4,5]), 6)
         self.assertEqual(findMaxSubArray([-1, 1,-1,2,-1,3, -1]), 4)
         self.assertEqual(findMaxSubArray([-1, 1,2,3, -1]), 6)
         self.assertEqual(findMaxSubArray([1,2,3, -1, -2]), 6)
         self.assertEqual(findMaxSubArray([1,2,3,4,0,-1,0,-3,1,-10, 1,2,3,-1,0,-2,1,-1,1,0,0,2,3,-1,-5,1 ]), 10)
         self.assertEqual(findMaxSubArray([1,2,3,4,0,-1,0,-3,1,-10, 1,2,3,-1,0,-2,1,-1,1,0,0,2,3,2,-1,-5,1 ]), 11)
-        self.assertEqual(findMaxSubArray([-5,-1,-2]),-1)
-        self.assertEqual(findMaxSubArray([-1]),-1)
+
