@@ -4,9 +4,9 @@ UNEXIST_INDEX = -1
 
 class Sequence:
     def __init__(self):
-        self.reset_inices()
+        self.reset_indices()
 
-    def reset_inices(self):
+    def reset_indices(self):
         self.first_index = UNEXIST_INDEX
         self.last_index = UNEXIST_INDEX
         self.sum = 0
@@ -33,7 +33,7 @@ class MaxSequence:
 
     def reset_indices(self):
         for seq in [self.positive, self.negative]:#, self.curr]:
-            seq.reset_inices()
+            seq.reset_indices()
 
     def set_first_index(self, index):
         self.positive.first_index = index
