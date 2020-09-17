@@ -2,7 +2,12 @@ import unittest
 
 UNEXIST_INDEX = -1
 
+
 class Sequence:
+    first_index = UNEXIST_INDEX
+    last_index = UNEXIST_INDEX
+    sum = 0
+
     def __init__(self):
         self.reset_indices()
 
@@ -28,14 +33,14 @@ class MaxSequence:
         self.positive = Sequence()
         self.negative = Sequence()
         self.max = Sequence()
-        self.list =[]
+        self.list = []
 
     def reset_indices(self):
         for seq in [self.positive, self.negative]:
             seq.reset_indices()
 
     def set_first_index(self, index):
-        self.reset_indices() # pos, neg
+        self.reset_indices()
         self.max.reset_indices()
         self.positive.first_index = index
         self.max.first_index = index
@@ -104,28 +109,36 @@ def findMaxSubArray(A):
 
     if is_curr_positive:
         sequence.set_sum()
-    return sequence.max.sum
+
+    return A[sequence.max.first_index: sequence.max.last_index + 1]
 
 
 class TestFindMaxSubArray(unittest.TestCase):
     def test_find_max_sub_array(self):
-        self.assertEqual(findMaxSubArray([1]),1)
-        self.assertEqual(findMaxSubArray([-1]),-1)
-        self.assertEqual(findMaxSubArray([-5,-1,-2]),-1)
-        self.assertEqual(findMaxSubArray([0,0,0]),0)
-        self.assertEqual(findMaxSubArray([1,2,3]),6)
-        self.assertEqual(findMaxSubArray([4,-5,6]),6)
-        self.assertEqual(findMaxSubArray([9,-8,7,-1,5]),12)
-        self.assertEqual(findMaxSubArray([0,1,2,0,3,0]),6)
-        self.assertEqual(findMaxSubArray([-1,-2,0,1,2,0,3,0]),6)
-        self.assertEqual(findMaxSubArray([-1,-2,0,1,2,0,3,0, -1,-2,5,2]),10)
-        self.assertEqual(findMaxSubArray([5,-4,3,-2,5,-1,0.5]),7)
-        self.assertEqual(findMaxSubArray([2, -1, 3,-2,1,-1,5]),7)
-        self.assertEqual(findMaxSubArray([1,-1,2,1,5,-3,2,-8,6,-1,3]), 8)
-        self.assertEqual(findMaxSubArray([4,-1,1,-2,3,-4,5]), 6)
-        self.assertEqual(findMaxSubArray([-1, 1,-1,2,-1,3, -1]), 4)
-        self.assertEqual(findMaxSubArray([-1, 1,2,3, -1]), 6)
-        self.assertEqual(findMaxSubArray([1,2,3, -1, -2]), 6)
-        self.assertEqual(findMaxSubArray([1,2,3,4,0,-1,0,-3,1,-10, 1,2,3,-1,0,-2,1,-1,1,0,0,2,3,-1,-5,1 ]), 10)
-        self.assertEqual(findMaxSubArray([1,2,3,4,0,-1,0,-3,1,-10, 1,2,3,-1,0,-2,1,-1,1,0,0,2,3,2,-1,-5,1 ]), 11)
-
+        self.assertEqual(findMaxSubArray([1]), [1])
+        self.assertEqual(findMaxSubArray([-1]), [-1])
+        self.assertEqual(findMaxSubArray([-5, -1, -2]), [-1])
+        self.assertEqual(findMaxSubArray([0, 0, 0]), [0, 0, 0])
+        self.assertEqual(findMaxSubArray([1, 2, 3]), [1, 2, 3])
+        self.assertEqual(findMaxSubArray([0, 1, 2, 0, 3, 0]), [0, 1, 2, 0, 3, 0])
+        self.assertEqual(findMaxSubArray([4, -5, 6]), [6])
+        self.assertEqual(findMaxSubArray([9, -8, 7, -1, 5]), [9, -8, 7, -1, 5])
+        self.assertEqual(findMaxSubArray([-1, -2, 0, 1, 2, 0, 3, 0]), [0, 1, 2, 0, 3, 0])
+        self.assertEqual(findMaxSubArray(
+            [-1, -2, 0, 1, 2, 0, 3, 0, -1, -2, 5, 2]),
+            [0, 1, 2, 0, 3, 0, -1, -2, 5, 2])
+        self.assertEqual(findMaxSubArray([5, -4, 3, -2, 5, -1, 0.5]), [5, -4, 3, -2, 5])
+        self.assertEqual(findMaxSubArray([2, -1, 3, -2, 1, -1, 5]), [2, -1, 3, -2, 1, -1, 5])
+        self.assertEqual(findMaxSubArray([1, -1, 2, 1, 5, -3, 2, -8, 6, -1, 3]), [2, 1, 5])
+        self.assertEqual(findMaxSubArray([4, -1, 1, -2, 3, -4, 5]), [4, -1, 1, -2, 3, -4, 5])
+        self.assertEqual(findMaxSubArray([-1, 1, -1, 2, -1, 3, -1]), [2, -1, 3])
+        self.assertEqual(findMaxSubArray([-1, 1, 2, 3, -1]), [1, 2, 3])
+        self.assertEqual(findMaxSubArray([1, 2, 3, -1, -2]), [1, 2, 3])
+        self.assertEqual(
+            findMaxSubArray([1, 2, 3, 4, 0, -1, 0, -3, 1, -10, 1, 2, 3, -1, 0, -2, 1, -1, 1, 0, 0, 2, 3, -1, -5, 1]),
+            [1, 2, 3, 4, 0])
+        self.assertEqual(
+            findMaxSubArray([1, 2, 3, 4, 0, -1, 0, -3, 1, -10, 1, 2, 3, -1, 0, -2, 1, -1, 1, 0, 0, 2, 3, 2, -1, -5, 1]),
+            [1, 2, 3, -1, 0, -2, 1, -1, 1, 0, 0, 2, 3, 2])
+        self.assertEqual(findMaxSubArray([5, -4, -2, 10, -9, 8, -7, 6, -5, 4, -3, 6 - 7, 8]),
+                         [10, -9, 8, -7, 6, -5, 4, -3, 6 - 7, 8])
